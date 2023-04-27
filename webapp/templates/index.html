@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suspicious Discussion Monitor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        
+        textarea {
+            display: block;
+            width: 98%;
+            padding: 10px;
+            font-size: 16px;
+            resize: none;
+            margin-bottom: 20px;
+        }
+        
+        button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+        
+        h2 {
+        text-align: center;
+        color: #333;
+        }        
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Suspicious Discussion Monitor</h1>
+        <div>
+            <textarea name="message" id="message" cols="30" rows="10" placeholder="Enter a message here..."></textarea>
+            <span id="char-count">0 characters</span>
+            <button type="button" id="analyze-btn" disabled>Analyze</button>
+        </div>
+        <div id="prediction-results"></div>        
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const messageTextarea = document.getElementById('message');
+            const charCountSpan = document.getElementById('char-count');
+            const analyzeBtn = document.getElementById('analyze-btn');
+            const predictionResults = document.getElementById('prediction-results');
+        
+            function updateCharCount() {
+                const charCount = messageTextarea.value.length;
+                charCountSpan.textContent = `${charCount} characters`;
+            }
+        
+            function toggleAnalyzeButton() {
+                analyzeBtn.disabled = messageTextarea.value.trim().length === 0;
+            }
+        
+            messageTextarea.addEventListener('input', function () {
+                updateCharCount();
+                toggleAnalyzeButton();
+            });
+        
+            analyzeBtn.addEventListener('click', function () {
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', '/predict', true);
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                xhr.onload = function () {
+                    if (xhr.status === 200) {
+                        const response = JSON.parse(xhr.responseText);
+                        if (response.result === 1) {
+                            predictionResults.textContent = "Non-Suspicious";
+                        } else {
+                            predictionResults.textContent = "Suspicious";
+                        }
+                    }
+                };
+                xhr.send('message=' + encodeURIComponent(messageTextarea.value));
+            });
+        
+            // Initialize character count and button state
+            updateCharCount();
+            toggleAnalyzeButton();
+        });        
+    </script>
+</body>
+</html>
