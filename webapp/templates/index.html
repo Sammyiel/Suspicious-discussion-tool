@@ -47,7 +47,26 @@
         h2 {
         text-align: center;
         color: #333;
-        }        
+        }
+        .strip {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 20px;
+            height: 100%;
+            display: none;
+        }
+        
+        .strip.green {
+            background-color: #4caf50;
+            display: block;
+        }
+        
+        .strip.red {
+            background-color: #f44336;
+            display: block;
+        }
+                
     </style>
 </head>
 <body>
@@ -58,7 +77,8 @@
             <span id="char-count">0 characters</span>
             <button type="button" id="analyze-btn" disabled>Analyze</button>
         </div>
-        <div id="prediction-results"></div>        
+        <div class="strip"></div>
+        <h2 id="prediction-results"></h2>        
     </div>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -66,6 +86,7 @@
             const charCountSpan = document.getElementById('char-count');
             const analyzeBtn = document.getElementById('analyze-btn');
             const predictionResults = document.getElementById('prediction-results');
+            const strip = document.querySelector('.strip');
         
             function updateCharCount() {
                 const charCount = messageTextarea.value.length;
@@ -89,9 +110,13 @@
                     if (xhr.status === 200) {
                         const response = JSON.parse(xhr.responseText);
                         if (response.result === 1) {
-                            predictionResults.textContent = "Non-Suspicious";
-                        } else {
                             predictionResults.textContent = "Suspicious";
+                            strip.classList.remove("green");
+                            strip.classList.add("red");
+                        } else {
+                            predictionResults.textContent = "Non-suspicious";
+                            strip.classList.remove("red");
+                            strip.classList.add("green");
                         }
                     }
                 };

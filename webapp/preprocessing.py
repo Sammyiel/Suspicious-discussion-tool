@@ -2,7 +2,7 @@ import re
 import nltk
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
-
+from nltk.util import ngrams
 
 def preprocess_text(text):
     # Remove URLs and special characters
@@ -22,7 +22,13 @@ def preprocess_text(text):
     lemmatizer = WordNetLemmatizer()
     words = [lemmatizer.lemmatize(word) for word in words]
 
-    # Join words back into a single string
-    text = ' '.join(words)
+    # Generate bigrams
+    bigrams = list(ngrams(words, 2))
+
+    # Combine words and bigrams
+    combined = words + ['_'.join(bigram) for bigram in bigrams]
+
+    # Join words and bigrams back into a single string
+    text = ' '.join(combined)
 
     return text
